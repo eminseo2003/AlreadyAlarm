@@ -6,7 +6,7 @@ import 'dart:developer';
 class UserlistService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // 사용자 리스트 추가 (Firestore에 데이터 저장)
+  // 사용자 리스트 추가 
   Future<void> addUserList(UserListModel userList) async {
     await _db.collection('userlists').doc(userList.id).set(userList.toJson());
   }
@@ -27,7 +27,7 @@ class UserlistService {
 
   // 유저 리스트 삭제 (해당 리스트의 모든 알람도 삭제)
   Future<void> deleteUserList(String userListId) async {
-    // 1. 해당 UserList에 속한 모든 알람 삭제
+    // 해당 UserList에 속한 모든 알람 삭제
     QuerySnapshot alarmSnapshot = await _db
         .collection('alarms')
         .where('userListId', isEqualTo: userListId)
@@ -37,7 +37,7 @@ class UserlistService {
       await doc.reference.delete();
     }
 
-    // 2. 유저 리스트 삭제
+    // 유저 리스트 삭제
     await _db.collection('userlists').doc(userListId).delete();
   }
 
@@ -45,10 +45,9 @@ class UserlistService {
   Future<void> updateUserList(UserListModel userList) async {
     final docRef = FirebaseFirestore.instance.collection('userlists').doc(userList.id);
 
-    // 🔹 문서 존재 여부 확인
     final docSnapshot = await docRef.get();
     if (!docSnapshot.exists) {
-      throw Exception("🔥 오류: 해당 userList 문서가 Firestore에 존재하지 않습니다! ID: ${userList.id}");
+      throw Exception("오류: 해당 userList 문서가 Firestore에 존재하지 않습니다! ID: ${userList.id}");
     }
 
     await docRef.update(userList.toJson());
@@ -70,9 +69,9 @@ class UserlistService {
     await docRef.update({
       'sortOption': newSortOption,
     }).then((_) {
-      log("✅ Firestore 데이터 업데이트 성공!");
+      log("Firestore 데이터 업데이트 성공");
     }).catchError((error) {
-      log("❌ Firestore 데이터 업데이트 실패: $error");
+      log("Firestore 데이터 업데이트 실패: $error");
     });
   }
 }

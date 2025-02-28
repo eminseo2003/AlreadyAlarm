@@ -66,6 +66,7 @@ class AlarmListViewState extends State<AlarmListView> {
         break;
       case 2:
         showDialog(
+
           context: context,
           builder: (context) => AlertDialog(
             title: Text("정렬 방식"),
@@ -175,7 +176,7 @@ class AlarmListViewState extends State<AlarmListView> {
                   itemCount: filteredAlarms.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // 여백 추가
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -190,7 +191,7 @@ class AlarmListViewState extends State<AlarmListView> {
                                 filteredAlarms[index].isCompleted,
                               );
                             },
-                            activeColor: widget.userList.colorValue,// 체크 시 색상
+                            activeColor: widget.userList.colorValue,
                             checkColor: Colors.white,
                           ),
                           Column(
@@ -345,7 +346,7 @@ class AlarmListViewState extends State<AlarmListView> {
             onPressed: () async {
               Navigator.pop(dialogContext);
               await _userlistService.deleteUserList(widget.userList.id);
-              Navigator.pop(context);// 뒤로가기가 안돼
+              Navigator.pop(context);
             },
             child: Text("삭제", style: TextStyle(color: Colors.red)),
           ),

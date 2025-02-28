@@ -101,7 +101,7 @@ class TodayViewState extends State<TodayView> {
                   itemCount: filteredAlarms.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // 여백 추가
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -116,7 +116,7 @@ class TodayViewState extends State<TodayView> {
                                 filteredAlarms[index].isCompleted,
                               );
                             },
-                            activeColor: Colors.blue,// 체크 시 색상
+                            activeColor: Colors.blue,
                             checkColor: Colors.white,
                           ),
                           Column(

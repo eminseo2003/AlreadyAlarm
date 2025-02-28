@@ -185,7 +185,7 @@ class AddUserListViewState extends State<AddUserListView> {
     await _userlistService.addUserList(newUserList);
     
     if (!mounted) return;
-    Navigator.pop(context); // 저장 후 이전 화면으로 이동
+    Navigator.pop(context);
   }
   String _getColorName(Color color) {
     Map<Color, String> colorMap = {

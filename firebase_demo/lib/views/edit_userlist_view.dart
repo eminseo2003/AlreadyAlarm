@@ -196,7 +196,7 @@ class EditUserListViewState extends State<EditUserListView> {
     await _userlistService.updateUserList(editUserList);
     
     if (!mounted) return;
-    Navigator.pop(context, editUserList); // 저장 후 이전 화면으로 이동
+    Navigator.pop(context, editUserList);
   }
   String _getColorName(Color color) {
     Map<Color, String> colorMap = {

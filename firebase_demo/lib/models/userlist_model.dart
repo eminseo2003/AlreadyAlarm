@@ -53,10 +53,8 @@ class UserListModel {
     this.sortOption = SortOption.manual,
   }) : id = id ?? FirebaseFirestore.instance.collection('userlists').doc().id;
 
-  // 🔹 Firestore에서 가져온 `color` 값을 `Color`로 변환
   Color get colorValue => _getColorFromName(color);
 
-  // 🔄 Firestore에서 데이터를 가져올 때 JSON → 객체 변환
   factory UserListModel.fromJson(Map<String, dynamic> json) {
     return UserListModel(
       id: json['id'],
@@ -67,7 +65,6 @@ class UserListModel {
     );
   }
 
-  // 🔄 객체 → JSON 변환 (Firestore에 저장할 때 사용)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -78,12 +75,10 @@ class UserListModel {
     };
   }
 
-  // 🔄 Firestore DocumentSnapshot → 객체 변환
   factory UserListModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return UserListModel.fromJson(data);
   }
-  // 🔹 문자열 색상 변환 함수
   static Color _getColorFromName(String colorName) {
     Map<String, Color> colorMap = {
       "red": Colors.red,

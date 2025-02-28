@@ -1,8 +1,8 @@
 enum TaskList {
-  today,       // 오늘 할 일
-  future,      // 예정된 할 일
-  full,        // 전체 목록
-  complete     // 완료된 할 일
+  today,       
+  future,      
+  full,       
+  complete    
 }
 
 extension TaskListExtension on TaskList {

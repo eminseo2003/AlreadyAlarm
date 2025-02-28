@@ -63,7 +63,7 @@ class AddAlarmDetailViewState extends State<AddAlarmDetailView> {
   }
 
   String _twoDigits(int n) {
-    return n.toString().padLeft(2, '0'); // 한 자리 수일 경우 앞에 '0' 추가
+    return n.toString().padLeft(2, '0'); // 한 자리 수일 경우 앞에 0 추가
   }
 
 
@@ -138,7 +138,7 @@ class AddAlarmDetailViewState extends State<AddAlarmDetailView> {
                               }
                             });
                           },
-                        ),                      
+                        ),
                       ),
                       if (_isTimeEnabled)
                         _buildSelectableTile(
@@ -295,7 +295,6 @@ class AddAlarmDetailViewState extends State<AddAlarmDetailView> {
                         ],
                       ),
                       onTap: () {
-                        // 선택 다이얼로그 띄우기 (옵션 설정)
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -328,7 +327,6 @@ class AddAlarmDetailViewState extends State<AddAlarmDetailView> {
     );
   }
 
-  /// 🔹 선택할 수 있는 항목 (날짜, 시간 선택 시)
   Widget _buildSelectableTile({required String subtitle, required VoidCallback onTap}) {
     return ListTile(
       title: Text(subtitle, style: TextStyle(color: Colors.grey)),

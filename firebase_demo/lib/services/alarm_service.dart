@@ -5,7 +5,7 @@ import 'dart:developer';
 class AlarmService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // 알람 추가 (Firestore에 데이터 저장)
+  // 알람 추가
   Future<void> addAlarm(AlarmModel alarm) async {
   try {
     await _db.collection('alarms').doc(alarm.id).set(alarm.toJson());
@@ -67,7 +67,7 @@ class AlarmService {
 
   Future<void> updateAlarmStatus(String alarmId, bool isCompleted) async {
     await _db.collection('alarms').doc(alarmId).update({
-      'isCompleted': isCompleted, // 특정 필드만 업데이트
+      'isCompleted': isCompleted,
     });
   }
 

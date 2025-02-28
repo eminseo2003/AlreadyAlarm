@@ -53,7 +53,6 @@ class AddAlarmViewState extends State<AddAlarmView> {
           actions: [
             TextButton(
             onPressed: () {
-              // 새로운 목록 추가 기능
               _saveAlarm();
             },
             child: Text(
@@ -167,16 +166,16 @@ class AddAlarmViewState extends State<AddAlarmView> {
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // 최소 크기로 맞춰서 오른쪽 끝에 배치
-                              children: [
-                                Text(
-                                  _selectedUserList?.name ?? "선택하세요",
-                                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                                ),
-                                SizedBox(width: 8), // 숫자와 아이콘 사이 간격 추가
-                                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                              ],
-                            ),
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _selectedUserList?.name ?? "선택하세요",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                      ],
+                    ),
                     onTap: () async {
                       final selectedList = await Navigator.push<UserListModel>(
                         context,
@@ -236,10 +235,9 @@ class AddAlarmViewState extends State<AddAlarmView> {
       formattedDateTime += "우선순위: ${selectedPriority.title}\n";
     }
 
-    return formattedDateTime.trim(); // 불필요한 공백 제거
+    return formattedDateTime.trim();
   }
 
-  /// 🔹 알람 저장
   void _saveAlarm() async {
     if (_titleController.text.isEmpty ||
       _memoController.text.isEmpty ||
@@ -290,7 +288,7 @@ class AddAlarmViewState extends State<AddAlarmView> {
     await _alarmService.addAlarm(newAlarm);
     
     if (!mounted) return;
-    Navigator.pop(context); // 저장 후 이전 화면으로 이동
+    Navigator.pop(context);
   }
   
 

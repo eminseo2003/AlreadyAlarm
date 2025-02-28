@@ -17,7 +17,7 @@ class AlarmModel {
   String userListId;
 
   AlarmModel({
-    String? id, // Firestore에 저장할 때 자동 생성 가능
+    String? id,
     required this.title,
     required this.memo,
     this.isCompleted = false,
@@ -32,7 +32,6 @@ class AlarmModel {
   }) : id = id ?? FirebaseFirestore.instance.collection('alarms').doc().id,
        createdAt = createdAt ?? DateTime.now();
 
-  // 🔄 Firestore에서 데이터를 가져올 때 JSON → 객체 변환
   factory AlarmModel.fromJson(Map<String, dynamic> json) {
     return AlarmModel(
       id: json['id'],
@@ -51,7 +50,6 @@ class AlarmModel {
     );
   }
 
-  // 🔄 객체 → JSON 변환 (Firestore에 저장할 때 사용)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -69,7 +67,6 @@ class AlarmModel {
     };
   }
 
-  // 🔄 Firestore DocumentSnapshot → 객체 변환
   factory AlarmModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return AlarmModel.fromJson(data);

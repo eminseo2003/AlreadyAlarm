@@ -16,14 +16,13 @@ import 'views/complete_alarmlist_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Firebase 초기화
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -82,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           TextButton(
             onPressed: () {
-              // 새로운 목록 추가 기능
+              // 
             },
             child: Text(
               "편집",
@@ -93,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Color.fromRGBO(242, 242, 247, 1.0),
-        shape: CircularNotchedRectangle(), // 둥근 형태 추가 가능
+        shape: CircularNotchedRectangle(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -103,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   MaterialPageRoute(builder: (context) => AddAlarmView()),
                 ).then((_) {
-                                  _fetchAlarmCounts();
-                                });
+                  _fetchAlarmCounts();
+                });
               },
               icon: CircleAvatar(
                 backgroundColor: Colors.blue,
@@ -115,13 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                // 새로운 목록 추가 기능
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddUserListView()),
                 ).then((_) {
-                                  _fetchAlarmCounts();
-                                });
+                  _fetchAlarmCounts();
+                });
               },
               child: Text("목록 추가", style: TextStyle(color: Colors.blue, fontSize: 18)),
             ),
@@ -131,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Column(
         children: [
-            // 🔹 검색창
             Padding(
               padding: const EdgeInsets.only(bottom: 25.0),
               child: Padding(
@@ -188,7 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            //알림 리스트 
             SizedBox(
               child: StreamBuilder<List<UserListModel>>(
                 stream: _userlistService.getUserLists(),
@@ -265,7 +261,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ],
                               ),
                               onTap: () {
-                                  // 해당 목록 클릭 시 이동
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => AlarmListView(userList: userlist)),
@@ -310,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Text(title, style: TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.bold)),  
                   ],
                 ),
-                Spacer(), // 왼쪽 Column과 아이콘 사이 여백 추가
+                Spacer(),
                 Text("$count", style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
               ],
             ),
