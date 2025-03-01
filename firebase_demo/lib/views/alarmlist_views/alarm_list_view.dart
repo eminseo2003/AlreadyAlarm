@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../services/alarm_service.dart';
-import '../services/userlist_service.dart';
+import '../../services/alarm_service.dart';
+import '../../services/userlist_service.dart';
 
-import '../models/alarm_model.dart';
-import '../models/repeatfrequency_model.dart';
-import '../models/priority_model.dart';
-import '../models/userlist_model.dart';
+import '../../models/alarm_model.dart';
+import '../../models/repeatfrequency_model.dart';
+import '../../models/priority_model.dart';
+import '../../models/userlist_model.dart';
 
-import 'add_alarm_view.dart';
+import '../add_views/add_alarm_view.dart';
 import 'edit_userlist_view.dart';
 
 class AlarmListView extends StatefulWidget {

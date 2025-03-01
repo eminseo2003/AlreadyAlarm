@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/userlist_service.dart';
-import '../models/userlist_model.dart';
+import '../../services/userlist_service.dart';
+import '../../models/userlist_model.dart';
 
 class EditUserListView extends StatefulWidget {
   

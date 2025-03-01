@@ -5,14 +5,14 @@ import '../services/userlist_service.dart';
 import '../services/alarm_service.dart';
 import '../models/userlist_model.dart';
 
-import 'views/alarm_list_view.dart';
-import 'views/add_alarm_view.dart';
-import 'views/add_userlist_view.dart';
+import 'views/alarmlist_views/alarm_list_view.dart';
+import 'views/add_views/add_alarm_view.dart';
+import 'views/add_views/add_userlist_view.dart';
 
-import 'views/today_alarmlist_view.dart';
-import 'views/scheduled_alarmlist_view.dart';
-import 'views/all_alarmlist_view.dart';
-import 'views/complete_alarmlist_view.dart';
+import 'views/catedory_views/today_alarmlist_view.dart';
+import 'views/catedory_views/scheduled_alarmlist_view.dart';
+import 'views/catedory_views/all_alarmlist_view.dart';
+import 'views/catedory_views/complete_alarmlist_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

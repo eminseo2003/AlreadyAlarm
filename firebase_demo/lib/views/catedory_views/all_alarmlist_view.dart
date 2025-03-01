@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import '../services/alarm_service.dart';
-import '../models/alarm_model.dart';
-import '../models/repeatfrequency_model.dart';
-import '../models/priority_model.dart';
-class TodayView extends StatefulWidget {
+import '../../services/alarm_service.dart';
 
-  const TodayView({super.key});
+import '../../models/alarm_model.dart';
+import '../../models/repeatfrequency_model.dart';
+import '../../models/priority_model.dart';
+
+class AllTasksView extends StatefulWidget {
+
+  const AllTasksView({super.key});
 
   @override
-  TodayViewState createState() => TodayViewState();
+  AllTasksViewState createState() => AllTasksViewState();
 }
 
-class TodayViewState extends State<TodayView> {
+class AllTasksViewState extends State<AllTasksView> {
   final AlarmService _alarmService = AlarmService();
   bool _showCompleted = false;
 
@@ -55,14 +57,14 @@ class TodayViewState extends State<TodayView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("오늘"),
+        title: Text("전체"),
         backgroundColor: Colors.white,
         actions: [
           _buildPopupMenu(),
         ],
       ),
       body: StreamBuilder<List<AlarmModel>>(
-        stream: _alarmService.getTodayAlarms(),
+        stream: _alarmService.getAllAlarms(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text("오류 발생: ${snapshot.error}"));
@@ -86,11 +88,11 @@ class TodayViewState extends State<TodayView> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                  "오늘",
+                  "전체",
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -116,7 +118,7 @@ class TodayViewState extends State<TodayView> {
                                 filteredAlarms[index].isCompleted,
                               );
                             },
-                            activeColor: Colors.blue,
+                            activeColor: Colors.black,
                             checkColor: Colors.white,
                           ),
                           Column(
@@ -130,7 +132,7 @@ class TodayViewState extends State<TodayView> {
                                         _prioritySymbol(filteredAlarms[index].priority),
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: Colors.blue,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -225,3 +227,4 @@ class TodayViewState extends State<TodayView> {
     );
   }
 }
+

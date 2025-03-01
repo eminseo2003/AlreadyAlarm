@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/userlist_model.dart';
-import '../services/userlist_service.dart';
+import '../../models/userlist_model.dart';
+import '../../services/userlist_service.dart';
 
 class SelectUserListView extends StatelessWidget {
   final UserlistService _userlistService = UserlistService();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/repeatfrequency_model.dart';
-import '../models/priority_model.dart';
+import '../../models/repeatfrequency_model.dart';
+import '../../models/priority_model.dart';
 
 class AddAlarmDetailView extends StatefulWidget {
   final DateTime? initialDate;
