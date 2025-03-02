@@ -117,7 +117,7 @@ class CompletedViewState extends State<CompletedView> {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          SizedBox(width: 4),
+                          //SizedBox(width: 2),
                           TextButton(
                             onPressed: () async {
                               await _alarmService.deleteAllCompletedAlarms(filteredAlarms);

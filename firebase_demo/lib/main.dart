@@ -17,6 +17,7 @@ import 'views/catedory_views/today_alarmlist_view.dart';
 import 'views/catedory_views/scheduled_alarmlist_view.dart';
 import 'views/catedory_views/all_alarmlist_view.dart';
 import 'views/catedory_views/complete_alarmlist_view.dart';
+import 'views/catedory_views/category_selection_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,6 +95,21 @@ class _MyHomePageState extends State<MyHomePage> {
         return "!!!";
     }
   }
+  List<String> selectedCategories = ["오늘", "예정", "전체", "완료됨"];
+  void _openCategorySelection() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => CategorySelectionDialog(
+        selectedCategories: selectedCategories,
+        onSelectedCategoriesChanged: (newCategories) {
+          setState(() {
+            selectedCategories = newCategories;
+          });
+        },
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,9 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Color.fromRGBO(242, 242, 247, 1.0),
         actions: [
           TextButton(
-            onPressed: () {
-              // 
-            },
+            onPressed: _openCategorySelection,
             child: Text(
               "편집",
               style: TextStyle(color: Colors.blue, fontSize: 18),
@@ -196,6 +210,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
   Widget _buildDefaultView() {
+    final categoryData = [
+      {"title": "오늘", "icon": Icons.calendar_today, "count": _todayCount, "color": Colors.blue},
+      {"title": "예정", "icon": Icons.calendar_month, "count": _scheduledCount, "color": Colors.red},
+      {"title": "전체", "icon": Icons.list, "count": _allCount, "color": Colors.black},
+      {"title": "완료됨", "icon": Icons.check_circle, "count": _completedCount, "color": Colors.grey},
+    ];
+
+    final filteredCategories = categoryData.where((category) => selectedCategories.contains(category["title"])).toList();
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -210,18 +232,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSpacing: 10,
                 mainAxisExtent: 100,
               ),
-              itemCount: 4,
+              itemCount: filteredCategories.length,
               itemBuilder: (context, index) {
-                final icons = [Icons.calendar_today, Icons.calendar_month, Icons.list, Icons.check_circle];
-                final titles = ["오늘", "예정", "전체", "완료됨"];
-                final counts = [_todayCount, _scheduledCount, _allCount, _completedCount];
-                final colors = [Colors.blue, Colors.red, Colors.black, Colors.grey];
+                final category = filteredCategories[index];
 
                 return GestureDetector(
-                  onTap: () {
-                    _navigateToView(context, index);
-                  },
-                  child: _buildStatusCard(icons[index], titles[index], counts[index], colors[index]),
+                  onTap: () => _navigateToView(context, index),
+                  child: _buildStatusCard(
+                    category["icon"] as IconData,
+                    category["title"] as String,
+                    category["count"] as int,
+                    category["color"] as Color,
+                  ),
                 );
               },
             ),
