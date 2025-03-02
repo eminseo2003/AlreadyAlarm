@@ -59,6 +59,12 @@ class AlarmService {
   Future<void> deleteAlarm(String id) async {
     await _db.collection('alarms').doc(id).delete();
   }
+  //알람전체 삭제
+  Future<void> deleteAllCompletedAlarms(List<AlarmModel> alarms) async {
+  for (var alarm in alarms) {
+    await _db.collection('alarms').doc(alarm.id).delete();
+  }
+}
 
   // 알람 업데이트
   Future<void> updateAlarm(AlarmModel alarm) async {

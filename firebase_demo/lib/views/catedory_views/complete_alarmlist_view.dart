@@ -15,7 +15,6 @@ class CompletedView extends StatefulWidget {
 
 class CompletedViewState extends State<CompletedView> {
   final AlarmService _alarmService = AlarmService();
-  bool _showCompleted = false;
 
   String _prioritySymbol(Priority priority) {
     switch (priority) {
@@ -46,6 +45,19 @@ class CompletedViewState extends State<CompletedView> {
         ],
       ),
     );
+  }
+  int _completedCount = 0;
+  @override
+  void initState() {
+    super.initState();
+    _fetchAlarmCounts();
+  }
+  Future<void> _fetchAlarmCounts() async {
+    int completedCount = await _alarmService.getCompletedAlarmCount();
+
+    setState(() {
+      _completedCount = completedCount;
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -79,15 +91,52 @@ class CompletedViewState extends State<CompletedView> {
                 padding: const EdgeInsets.all(8.0),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                  "완료됨",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "완료됨",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                      
+                      Row(
+                        children: [
+                          Text(
+                            "${_completedCount}개 완료됨",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: const Color.fromARGB(255, 65, 65, 65),
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          SizedBox(width: 4),
+                          TextButton(
+                            onPressed: () async {
+                              await _alarmService.deleteAllCompletedAlarms(filteredAlarms);
+                              setState(() {}); // UI 갱신
+                            },
+                            child: Text(
+                              "지우기",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.blue,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            )
+                        ],
+                      )
+                      
+                    ],
+                  )
                 )
               ),
               Expanded(

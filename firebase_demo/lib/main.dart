@@ -3,7 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../services/userlist_service.dart';
 import '../services/alarm_service.dart';
+
 import '../models/userlist_model.dart';
+import '../models/alarm_model.dart';
+import '../models/repeatfrequency_model.dart';
+import '../models/priority_model.dart';
 
 import 'views/alarmlist_views/alarm_list_view.dart';
 import 'views/add_views/add_alarm_view.dart';
@@ -47,6 +51,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final UserlistService _userlistService = UserlistService();
   final AlarmService _alarmService = AlarmService();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   int _todayCount = 0;
   int _scheduledCount = 0;
@@ -57,6 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _fetchAlarmCounts();
+  }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
   Future<void> _fetchAlarmCounts() async {
     int todayCount = await _alarmService.getTodayAlarmCount();
@@ -71,7 +82,18 @@ class _MyHomePageState extends State<MyHomePage> {
       _completedCount = completedCount;
     });
   }
-
+  String _prioritySymbol(Priority priority) {
+    switch (priority) {
+      case Priority.none:
+        return ""; 
+      case Priority.low:
+        return "!";
+      case Priority.medium:
+        return "!!";
+      case Priority.high:
+        return "!!!";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,158 +150,183 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-        children: [
+          children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 25.0),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 105, 105, 105)),
-                  suffixIcon: Icon(Icons.mic, color: const Color.fromARGB(255, 105, 105, 105)),
-                  hintText: "검색",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: Color.fromRGBO(223, 223, 229, 1),
-                  contentPadding: EdgeInsets.symmetric(),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value.toLowerCase();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 105, 105, 105)),
+                    suffixIcon: Icon(Icons.mic, color: const Color.fromARGB(255, 105, 105, 105)),
+                    hintText: "검색",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    filled: true,
+                    fillColor: Color.fromRGBO(223, 223, 229, 1),
+                    contentPadding: EdgeInsets.symmetric(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
-                ),
-              ),  
-              )
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  mainAxisExtent: 100,
-                ),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  final icons = [Icons.calendar_today, Icons.calendar_month, Icons.list, Icons.check_circle];
-                  final titles = ["오늘", "예정", "전체", "완료됨"];
-                  final counts = [_todayCount, _scheduledCount, _allCount, _completedCount];
-                  final colors = [Colors.blue, Colors.red, Colors.black, Colors.grey];
-
-                  return GestureDetector(
-                    onTap: () {
-                      _navigateToView(context, index);
-                    },
-                    child: _buildStatusCard(icons[index], titles[index], counts[index], colors[index]),
-                  );
-                },
+                ),  
               ),
+              
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
-              child: Row(
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 200,
+              child: Column(
                 children: [
-                  Text("나의 목록", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Flexible(
+                    child: _searchQuery.isEmpty ? _buildDefaultView() : _buildSearchResults(),
+                  ),
                 ],
               ),
             ),
-            SizedBox(
-              child: StreamBuilder<List<UserListModel>>(
-                stream: _userlistService.getUserLists(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("데이터 로딩 중 오류 발생!"),
-                          Text("오류 내용: ${snapshot.error}"),
-                        ],
-                      ),
-                    );
-                  }
-                  if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                  final userlists = snapshot.data!;
-                  if (userlists.isEmpty) {
-                    return const Center(child: Text("등록된 리스트가 없습니다."));
-                  }
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: userlists.length,
-                        separatorBuilder: (context, index) => const Divider(
-                          color: Color.fromARGB(255, 226, 226, 226),
-                          height: 0.5,
-                        ),
-                        itemBuilder: (context, index) {
-                          final userlist = userlists[index];
 
-                          return Dismissible(
-                            key: Key(userlist.id),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                              alignment: Alignment.centerRight,
-                              color: Colors.red, // 삭제 배경 색상
-                              child: Icon(Icons.delete, color: Colors.white, size: 30),
-                            ),
-                            onDismissed: (direction) async {
-                              await _userlistService.deleteUserList(userlist.id);
-                              setState(() {
-                                userlists.removeAt(index);
-                              });
-                            },
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildDefaultView() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: 100,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                final icons = [Icons.calendar_today, Icons.calendar_month, Icons.list, Icons.check_circle];
+                final titles = ["오늘", "예정", "전체", "완료됨"];
+                final counts = [_todayCount, _scheduledCount, _allCount, _completedCount];
+                final colors = [Colors.blue, Colors.red, Colors.black, Colors.grey];
 
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: userlist.colorValue,
-                                radius: 18,
-                                child: Icon(Icons.list, color: Colors.white, size: 25),
-                              ),
-                              title: Text(
-                                userlist.name,
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "${userlist.alarms?.length ?? 0}",
-                                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => AlarmListView(userList: userlist)),
-                                ).then((_) {
-                                  _fetchAlarmCounts();
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                return GestureDetector(
+                  onTap: () {
+                    _navigateToView(context, index);
+                  },
+                  child: _buildStatusCard(icons[index], titles[index], counts[index], colors[index]),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
+            child: Row(
+              children: [
+                Text("나의 목록", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          SizedBox(
+            child: StreamBuilder<List<UserListModel>>(
+              stream: _userlistService.getUserLists(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("데이터 로딩 중 오류 발생!"),
+                        Text("오류 내용: ${snapshot.error}"),
+                      ],
                     ),
                   );
-                },
-              ),
+                }
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                final userlists = snapshot.data!;
+                if (userlists.isEmpty) {
+                  return const Center(child: Text("등록된 리스트가 없습니다."));
+                }
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: userlists.length,
+                      separatorBuilder: (context, index) => const Divider(
+                        color: Color.fromARGB(255, 226, 226, 226),
+                        height: 0.5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final userlist = userlists[index];
+
+                        return Dismissible(
+                          key: Key(userlist.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                            alignment: Alignment.centerRight,
+                            color: Colors.red, // 삭제 배경 색상
+                            child: Icon(Icons.delete, color: Colors.white, size: 30),
+                          ),
+                          onDismissed: (direction) async {
+                            await _userlistService.deleteUserList(userlist.id);
+                            setState(() {
+                              userlists.removeAt(index);
+                            });
+                          },
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: userlist.colorValue,
+                              radius: 18,
+                              child: Icon(Icons.list, color: Colors.white, size: 25),
+                            ),
+                            title: Text(
+                              userlist.name,
+                              style: TextStyle(fontSize: 18, color: Colors.black),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "${userlist.alarms?.length ?? 0}",
+                                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AlarmListView(userList: userlist)),
+                              ).then((_) {
+                                _fetchAlarmCounts();
+                              });
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
-            ],
           ),
-        ),
+        ],
+      )
     );
   }
   Widget _buildStatusCard(IconData icon, String title, int count, Color color) {
@@ -314,6 +361,135 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+  Widget _buildSearchResults() {
+    return StreamBuilder<List<AlarmModel>>(
+      stream: _alarmService.getAlarms(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text("오류 발생: ${snapshot.error}"));
+        }
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+        List<AlarmModel> alarms = snapshot.data ?? [];
+
+        // 🔍 검색어 필터링
+        alarms = alarms.where((alarm) {
+          return alarm.title.toLowerCase().contains(_searchQuery) ||
+              alarm.memo.toLowerCase().contains(_searchQuery);
+        }).toList();
+
+        if (alarms.isEmpty) {
+          return const Center(child: Text("검색 결과가 없습니다."));
+        }
+
+        return ListView.builder(
+          itemCount: alarms.length,
+          itemBuilder: (context, index) {
+            return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: alarms[index].isCompleted,
+                            onChanged: (bool? newValue) async {
+                              setState(() {
+                                alarms[index].isCompleted = newValue ?? false;
+                              });
+                              await _alarmService.updateAlarmStatus(
+                                alarms[index].id,
+                                alarms[index].isCompleted,
+                              );
+                            },
+                            activeColor: Colors.grey,
+                            checkColor: Colors.white,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (alarms[index].priority != Priority.none) ...[
+                                      Text(
+                                        _prioritySymbol(alarms[index].priority),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                    ],
+                                    
+                                    Text(
+                                      alarms[index].title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: alarms[index].isCompleted
+                                            ? Colors.grey
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  alarms[index].memo,
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (alarms[index].date != null) ...[
+                                      Text(
+                                        "${alarms[index].date!.year}. ${alarms[index].date!.month}. ${alarms[index].date!.day}.",
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                      SizedBox(width: 5),
+                                    ],
+                                    if (alarms[index].time != null) ...[
+                                      Text(
+                                        "${alarms[index].time!.hour}:${alarms[index].time!.minute}",
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                      SizedBox(width: 5),
+                                    ],
+                                    if (alarms[index].repeatFrequency != RepeatFrequency.none) ...[
+                                      Icon(
+                                        Icons.autorenew,
+                                        color: Colors.grey,
+                                        size: 14,
+                                      ),
+                                      Text(
+                                        alarms[index].repeatFrequency.title,
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                      SizedBox(width: 5),
+                                    ],
+                                    if (alarms[index].location != null) ...[
+                                      
+                                      Text(
+                                        "${alarms[index].location}",
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                      SizedBox(width: 5),
+                                    ],
+                                  ],
+                                ),
+                                
+                                const Divider(),
+
+                              ],
+                            ),
+                        ],
+                      ),
+                    );
+          },
+        );
+      },
+    );
+  }
   void _navigateToView(BuildContext context, int index) {
   Widget destination;
     switch (index) {
@@ -340,5 +516,4 @@ class _MyHomePageState extends State<MyHomePage> {
       _fetchAlarmCounts(); 
     });
   }
-
 }
