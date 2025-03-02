@@ -58,7 +58,7 @@ class _CategorySelectionDialogState extends State<CategorySelectionDialog> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                onPressed: () => Navigator.pop(context), // 취소
+                onPressed: () => Navigator.pop(context),
                 child: const Text("취소"),
               ),
               TextButton(

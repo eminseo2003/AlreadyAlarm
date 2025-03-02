@@ -15,7 +15,7 @@ class CompletedView extends StatefulWidget {
 
 class CompletedViewState extends State<CompletedView> {
   final AlarmService _alarmService = AlarmService();
-
+  
   String _prioritySymbol(Priority priority) {
     switch (priority) {
       case Priority.none:
@@ -117,7 +117,6 @@ class CompletedViewState extends State<CompletedView> {
                             ),
                             textAlign: TextAlign.left,
                           ),
-                          //SizedBox(width: 2),
                           TextButton(
                             onPressed: () async {
                               await _alarmService.deleteAllCompletedAlarms(filteredAlarms);

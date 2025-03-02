@@ -9,6 +9,7 @@ import '../../models/userlist_model.dart';
 
 import '../add_views/add_alarm_view.dart';
 import 'edit_userlist_view.dart';
+import 'edit_alarm_view.dart';
 
 class AlarmListView extends StatefulWidget {
   final UserListModel userList;
@@ -175,104 +176,114 @@ class AlarmListViewState extends State<AlarmListView> {
                 child: ListView.builder(
                   itemCount: filteredAlarms.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Checkbox(
-                            value: filteredAlarms[index].isCompleted,
-                            onChanged: (bool? newValue) async {
-                              setState(() {
-                                filteredAlarms[index].isCompleted = newValue ?? false;
-                              });
-                              await _alarmService.updateAlarmStatus(
-                                filteredAlarms[index].id,
-                                filteredAlarms[index].isCompleted,
-                              );
-                            },
-                            activeColor: widget.userList.colorValue,
-                            checkColor: Colors.white,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AlarmEditView(alarm: filteredAlarms[index]),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    if (filteredAlarms[index].priority != Priority.none) ...[
-                                      Text(
-                                        _prioritySymbol(filteredAlarms[index].priority),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: widget.userList.colorValue,
-                                          fontWeight: FontWeight.bold,
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Checkbox(
+                              value: filteredAlarms[index].isCompleted,
+                              onChanged: (bool? newValue) async {
+                                setState(() {
+                                  filteredAlarms[index].isCompleted = newValue ?? false;
+                                });
+                                await _alarmService.updateAlarmStatus(
+                                  filteredAlarms[index].id,
+                                  filteredAlarms[index].isCompleted,
+                                );
+                              },
+                              activeColor: widget.userList.colorValue,
+                              checkColor: Colors.white,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (filteredAlarms[index].priority != Priority.none) ...[
+                                        Text(
+                                          _prioritySymbol(filteredAlarms[index].priority),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: widget.userList.colorValue,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(width: 5),
-                                    ],
-                                    
-                                    Text(
-                                      filteredAlarms[index].title,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: filteredAlarms[index].isCompleted
-                                            ? Colors.grey
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  filteredAlarms[index].memo,
-                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    if (filteredAlarms[index].date != null) ...[
-                                      Text(
-                                        "${filteredAlarms[index].date!.year}. ${filteredAlarms[index].date!.month}. ${filteredAlarms[index].date!.day}.",
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                      SizedBox(width: 5),
-                                    ],
-                                    if (filteredAlarms[index].time != null) ...[
-                                      Text(
-                                        "${filteredAlarms[index].time!.hour}:${filteredAlarms[index].time!.minute}",
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                      SizedBox(width: 5),
-                                    ],
-                                    if (filteredAlarms[index].repeatFrequency != RepeatFrequency.none) ...[
-                                      Icon(
-                                        Icons.autorenew,
-                                        color: Colors.grey,
-                                        size: 14,
-                                      ),
-                                      Text(
-                                        filteredAlarms[index].repeatFrequency.title,
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                      SizedBox(width: 5),
-                                    ],
-                                    if (filteredAlarms[index].location != null) ...[
+                                        SizedBox(width: 5),
+                                      ],
                                       
                                       Text(
-                                        "${filteredAlarms[index].location}",
-                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                        filteredAlarms[index].title,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: filteredAlarms[index].isCompleted
+                                              ? Colors.grey
+                                              : Colors.black,
+                                        ),
                                       ),
-                                      SizedBox(width: 5),
                                     ],
-                                  ],
-                                ),
-                                
-                                const Divider(),
+                                  ),
+                                  Text(
+                                    filteredAlarms[index].memo,
+                                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                  ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (filteredAlarms[index].date != null) ...[
+                                        Text(
+                                          "${filteredAlarms[index].date!.year}. ${filteredAlarms[index].date!.month}. ${filteredAlarms[index].date!.day}.",
+                                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                        ),
+                                        SizedBox(width: 5),
+                                      ],
+                                      if (filteredAlarms[index].time != null) ...[
+                                        Text(
+                                          "${filteredAlarms[index].time!.hour}:${filteredAlarms[index].time!.minute}",
+                                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                        ),
+                                        SizedBox(width: 5),
+                                      ],
+                                      if (filteredAlarms[index].repeatFrequency != RepeatFrequency.none) ...[
+                                        Icon(
+                                          Icons.autorenew,
+                                          color: Colors.grey,
+                                          size: 14,
+                                        ),
+                                        Text(
+                                          filteredAlarms[index].repeatFrequency.title,
+                                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                        ),
+                                        SizedBox(width: 5),
+                                      ],
+                                      if (filteredAlarms[index].location != null) ...[
+                                        
+                                        Text(
+                                          "${filteredAlarms[index].location}",
+                                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                        ),
+                                        SizedBox(width: 5),
+                                      ],
+                                    ],
+                                  ),
+                                  
+                                  const Divider(),
 
-                              ],
-                            ),
-                        ],
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
                     );
                   },

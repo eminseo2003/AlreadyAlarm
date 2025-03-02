@@ -66,10 +66,20 @@ class AlarmService {
   }
 }
 
-  // 알람 업데이트
-  Future<void> updateAlarm(AlarmModel alarm) async {
-    await _db.collection('alarms').doc(alarm.id).update(alarm.toJson());
+// 알람 업데이트
+Future<void> updateAlarm(AlarmModel alarm) async {
+  final alarmData = alarm.toJson();
+
+  if (alarm.date != null && alarm.date!.year < 1900) {
+    alarmData["date"] = null;
   }
+  if (alarm.repeatEndDate != null && alarm.repeatEndDate!.year < 1900) {
+    alarmData["repeatEndDate"] = null;
+  }
+
+  await _db.collection("alarms").doc(alarm.id).update(alarmData);
+}
+
 
   Future<void> updateAlarmStatus(String alarmId, bool isCompleted) async {
     await _db.collection('alarms').doc(alarmId).update({
